@@ -19,6 +19,6 @@
     mode: '0644'
 
 - name: Ejecutar script SQL para configurar la base de datos
-  command: mysql -u root < /tmp/init.sql
+  shell: mysql -u root < /tmp/init.sql
   args:
     chdir: /tmp
