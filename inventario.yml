@@ -1,0 +1,15 @@
+---
+all:
+  children:
+    frontend:
+      hosts:
+        frontendA:
+          ansible_host: 10.0.1.14
+        frontendB:
+          ansible_host: 10.0.2.14
+    backend:
+      hosts:
+        backend:
+          ansible_host: 10.0.3.14
+    vars:
+      ansible_python_interpreter: /usr/bin/python3

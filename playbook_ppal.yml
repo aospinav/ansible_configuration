@@ -1,0 +1,34 @@
+---
+- name: Configuración del frontend
+  hosts: frontend
+  become: true
+  vars:
+    backend_url: "10.0.3.14:3000"
+    app_user: movieanalyst
+    app_group: movieanalyst
+    app_root: "/opt/movie-analyst"
+    app_ui_path: "{{ app_root }}/movie-analyst-ui"
+    repo_app: "https://github.com/aljoveza/devops-rampup.git"
+  roles:
+    - role: frontend
+
+- name: Configuración del backend
+  hosts: backend
+  become: true
+  vars:
+    backend_url: "10.0.3.14:3000"
+    app_user: movieanalyst
+    app_group: movieanalyst
+    app_root: "/opt/movie-analyst"
+    app_ui_path: "{{ app_root }}/movie-analyst-api"
+    repo_app: "https://github.com/aljoveza/devops-rampup.git"
+    db_host: localhost
+    db_user: applicationuser
+    db_pass: applicationuser
+    db_name: movie_db
+    api_port: 3000
+
+  roles:
+    - role: backend
+    - role: baseDeDatos
+   

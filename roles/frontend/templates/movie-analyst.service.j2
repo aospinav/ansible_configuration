@@ -1,0 +1,16 @@
+[Unit]
+Description=Movie Analyst UI Application
+After=network.target
+
+[Service]
+User={{ app_user }}
+Group={{ app_group }}
+WorkingDirectory={{ app_ui_path }}
+ExecStart=/usr/bin/node {{ app_ui_path }}/server.js
+Environment=BACKEND_URL={{ backend_url }}
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

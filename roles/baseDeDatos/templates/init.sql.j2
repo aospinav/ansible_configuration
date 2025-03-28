@@ -1,0 +1,60 @@
+-- Eliminar la base de datos si existe
+DROP DATABASE IF EXISTS movie_db;
+
+-- Crear la base de datos
+CREATE DATABASE movie_db;
+
+-- Crear el usuario y otorgar permisos
+CREATE USER IF NOT EXISTS 'applicationuser'@'localhost' IDENTIFIED BY 'applicationuser';
+GRANT ALL PRIVILEGES ON movie_db.* TO 'applicationuser'@'localhost';
+FLUSH PRIVILEGES;
+
+-- Usar la base de datos
+USE movie_db;
+
+-- Crear tabla publications
+CREATE TABLE publications (
+    name VARCHAR(255) PRIMARY KEY,
+    avatar VARCHAR(255)
+);
+
+-- Crear tabla reviewers
+CREATE TABLE reviewers (
+    name VARCHAR(255) PRIMARY KEY,
+    publication VARCHAR(255),
+    avatar VARCHAR(255),
+    FOREIGN KEY (publication) REFERENCES publications(name)
+);
+
+-- Crear tabla movies
+CREATE TABLE movies (
+    title VARCHAR(255) PRIMARY KEY,
+    release_year VARCHAR(255),
+    score INT,
+    reviewer VARCHAR(255),
+    FOREIGN KEY (reviewer) REFERENCES reviewers(name)
+);
+
+-- Insertar datos en publications
+INSERT INTO publications (name, avatar) VALUES
+('The Daily Film', 'newspaper'),
+('Movie Buffs United', 'users'),
+('Indie Cinema Weekly', 'film'),
+('Global Film Review', 'globe'),
+('CineCritics Magazine', 'book');
+
+-- Insertar datos en reviewers
+INSERT INTO reviewers (name, publication, avatar) VALUES
+('Alice Johnson', 'The Daily Film', 'alice.jpg'),
+('Bob Williams', 'Movie Buffs United', 'bob.jpg'),
+('Carol Davis', 'Indie Cinema Weekly', 'carol.jpg'),
+('David Rodriguez', 'Global Film Review', 'david.jpg'),
+('Eve Martinez', 'CineCritics Magazine', 'eve.jpg');
+
+-- Insertar datos en movies
+INSERT INTO movies (title, release_year, score, reviewer) VALUES
+('City of Dreams', '2023', 8, 'Alice Johnson'),
+('Echoes of the Past', '2022', 7, 'Bob Williams'),
+('Silent Shadows', '2023', 9, 'Carol Davis'),
+('Beyond the Horizon', '2024', 6, 'David Rodriguez'),
+('Crimson Peak', '2022', 8, 'Eve Martinez');

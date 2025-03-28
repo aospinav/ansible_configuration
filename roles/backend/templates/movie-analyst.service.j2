@@ -1,0 +1,19 @@
+[Unit]
+Description=Movie Analyst API Application
+After=network.target
+
+[Service]
+User={{ app_user }}
+Group={{ app_group }}
+WorkingDirectory={{ app_ui_path }}
+ExecStart=/usr/bin/node {{ app_ui_path }}/server.js
+Environment=DB_HOST={{ db_host }}
+Environment=DB_USER={{ db_user }}
+Environment=DB_PASS={{ db_pass }}
+Environment=DB_NAME={{ db_name }}
+Environment=PORT={{ api_port }}
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

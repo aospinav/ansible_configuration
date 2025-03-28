@@ -1,0 +1,24 @@
+---
+- name: Instalar MariaDB
+  dnf:
+    name: mariadb105-server
+    state: present
+
+- name: Iniciar y habilitar el servicio MariaDB
+  systemd:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Crear script SQL para inicializar la base de datos
+  template:
+    src: init.sql.j2
+    dest: /tmp/init.sql
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Ejecutar script SQL para configurar la base de datos
+  command: mysql -u root < /tmp/init.sql
+  args:
+    chdir: /tmp

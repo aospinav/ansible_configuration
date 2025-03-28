@@ -1,0 +1,69 @@
+---
+- name: Instalar dependencias del frontend
+  yum:
+    name:
+      - nodejs
+      - npm
+      - git
+    state: present
+
+- name: Crear grupo de la app_group
+  group:
+    name: "{{ app_group }}"
+    state: present
+
+- name: Crear usuario de la app_group
+  user:
+    name: "{{ app_user }}"
+    group: "{{ app_group }}"
+    shell: /bin/false
+    home: /home/{{ app_user }}
+    create_home: yes
+
+-  name: Ajustar permisos para el directorio home de la app_group
+   file:
+     path: /home/{{ app_user }}
+     owner: "{{ app_user }}"
+     group: "{{ app_group }}"
+     mode: '0700'
+
+
+- name: Configurar directorio seguro para Git
+  command: git config --global --add safe.directory "{{ app_root }}"
+  args:
+    creates: /root/.gitconfig  # Evita ejecutar el comando si ya está configurado
+
+- name: Clonar el repositorio de la app_group
+  git:
+    repo: "{{ repo_app }}"
+    dest: "{{ app_root }}"
+    clone: yes
+    update: yes
+
+- name: Intalar dependencias npm
+  command:
+    cmd: npm install
+    chdir: "{{ app_ui_path }}"
+  become: true
+
+- name: Ajustar permisos recursivos para el directorio de la aplicación
+  command: chown -R {{ app_user }}:{{ app_group }} "{{ app_root }}"
+  args:
+    creates: "{{ app_root }}"  # Evita ejecutar el comando si el directorio ya tiene los permisos correctos
+  become: true
+
+- name: Crear archivo de servicio systemd
+  template:
+    src: movie-analyst.service.j2
+    dest: /etc/systemd/system/movie-analyst.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Recargar systemd
+  systemd:
+    daemon_reload: yes
+  changed_when: true
+  notify: Correr servicio movie-analyst
+
+

@@ -1,0 +1,7 @@
+---
+- name: Correr servicio movie-analyst
+  service:
+    name: movie-analyst
+    enabled: yes
+    state: started
+    
