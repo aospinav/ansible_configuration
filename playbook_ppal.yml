@@ -1,4 +1,15 @@
 ---
+- name: Validar disponibilidad mediante ping
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Verificar conexión mediante ping
+      ping:
+      register: ping_result
+      retries: 5
+      delay: 10
+      until: ping_result is success
+
 - name: Configuración del frontend
   hosts: frontend
   become: true
