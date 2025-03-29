@@ -1,0 +1,5 @@
+mariadb_root_password: "rootpassword"
+db_name: "movie_db"
+db_user: "applicationuser"
+db_password: "applicationuser"
+db_host: "localhost"

@@ -1,0 +1,3 @@
+---
+- name: Ejecutar script de seguridad
+  command: mysql --user=root --password={{ mariadb_root_password }} < /tmp/secure_installation.sql

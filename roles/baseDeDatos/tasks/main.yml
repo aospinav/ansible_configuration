@@ -1,24 +1,47 @@
 ---
-- name: Instalar MariaDB
+- name: Instalar MariaDB server
   dnf:
     name: mariadb105-server
     state: present
+  become: true
 
-- name: Iniciar y habilitar el servicio MariaDB
-  systemd:
+- name: Iniciar servicio MariaDB
+  service:
     name: mariadb
     state: started
     enabled: yes
 
-- name: Crear script SQL para inicializar la base de datos
-  template:
-    src: init.sql.j2
-    dest: /tmp/init.sql
-    owner: root
-    group: root
-    mode: '0644'
 
-- name: Ejecutar script SQL para configurar la base de datos
-  shell: mysql -u root < /tmp/init.sql
-  args:
-    chdir: /tmp
+- name: Configurar MariaDB de forma segura si es necesario
+  expect:
+    command: mysql_secure_installation
+    responses:
+      # Respuestas para el script de instalación segura
+      'Enter current password for root \(enter for none\):': ""
+      'Switch to unix_socket authentication \[Y/n\]': "n"
+      'Change the root password\? \[Y/n\]': "Y"
+      'New password:': "{{ mariadb_root_password }}"
+      'Re-enter new password:': "{{ mariadb_root_password }}"
+      'Remove anonymous users\? \[Y/n\]': "Y"
+      'Disallow root login remotely\? \[Y/n\]': "Y"
+      'Remove test database and access to it\? \[Y/n\]': "Y"
+      'Reload privilege tables now\? \[Y/n\]': "Y"
+  become: true
+
+
+- name: Crear archivo SQL desde plantilla
+  template:
+    src: init_db.sql.j2
+    dest: /tmp/init_db.sql
+    mode: '0600'
+
+- name: Ejecutar script de inicialización de la base de datos
+  ansible.builtin.shell: mysql -u root -p{{ mariadb_root_password }} < /tmp/init_db.sql
+  become: true
+  register: db_init_result
+  changed_when: db_init_result.rc == 0
+
+- name: Eliminar archivo SQL temporal
+  ansible.builtin.file:
+    path: /tmp/init_db.sql
+    state: absent
